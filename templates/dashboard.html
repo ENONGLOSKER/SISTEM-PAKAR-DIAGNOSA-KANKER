@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} SP {% endblock %}
+{% block content %}
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Dashboard</h5>
+        <div class="text-end">
+            <div class="fw-bold">Muhammad Haris S.</div>
+            <small class="text-muted">admin</small>
+        </div>
+    </div>
+
+    <!-- Statistic Cards -->
+    <div class="row g-3 p-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #f5f0ff 0%, #d0c7fe, #d0c6fb 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Pasien</div>
+                        <h4 class="mb-1">32,450</h4>
+                        <small class="text-danger">-2,201</small>
+                    </div>
+                    <img src="{% static 'img/pasien.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #faf0f0 0%, #fec7c7, #fbc6c6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Penyakit</div>
+                        <h4 class="mb-1">32,450</h4>
+                        <small class="text-danger">-2,201</small>
+                    </div>
+                    <img src="{% static 'img/virus.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #f8fff0 0%, #eafec7, #e9fbc6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Gejala</div>
+                        <h4 class="mb-1">32,450</h4>
+                        <small class="text-success">+2,201</small>
+                    </div>
+                    <img src="{% static 'img/human.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card text-white bg-dark card-custom p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Aturan</div>
+                        <h4 class="mb-1">21,324</h4>
+                        <small>+2,031</small>
+                    </div>
+                    <img src="{% static 'img/shield.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>                    
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3 px-3">
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100">
+                <div class="virus-container">
+                    <img src="{% static 'img/virus.png' %}" alt="Virus Animasi" class="animated-virus">
+                </div>
+                <i style="font-size: 12px; margin-bottom: 5px; margin-top: -10px;">
+                    Silakan gunakan tombol <b>Diagnosa</b> di bawah untuk memulai diagnosis.
+                </i>
+                <a href="diagnosa.html" class="btn w-100"
+                    style="background: linear-gradient(to right, #5711e2 0%, #5839e3, #7556fd 100%); color: #fff; font-weight: 300;">Mulai Diagnosa
+                </a>
+            </div>
+        </div>
+
+        <!-- Grafik Diagnosis Line Chart -->
+        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Grafik Persebaran</h6>
+                    <!-- <span class="badge bg-primary" style="font-size: 0.85em;">Bulanan</span> -->
+                </div>
+                <div style="position:relative; min-height:220px;">
+                    <canvas id="lineChart"
+                        style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bar Chart Grafik Jumlah per Jenis Kategori Kanker -->
+        <div class="col-12 col-lg-3">
+            <div class="card card-custom p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Grafik Berdasrakan Kategori</h6>
+                    <!-- <span class="badge" style="font-size: 0.85em; background-color: #b69cea;">Kategori</span> -->
+                </div>
+                <div style="position:relative; min-height:220px;">
+                    <canvas id="barChartJenisKanker"
+                        style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
+                </div>
+                <div class="mt-2" style="font-size: 0.95em;">
+                    <ul class="mb-0 ps-3">
+                        <li>Kanker Paru-paru</li>
+                        <li>Kanker Payudara</li>
+                        <li>Kanker Prostat</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Table -->
+    <div class="row mt-4 px-3">
+        <div class="col-12">
+            <div class="card card-custom p-3 table-card">
+                <h6>Riwayat Hasil Diagnosa</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered mt-3 align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>Tanggal Diagnosa</th>
+                                <th>Nama Pasien</th>
+                                <th>Hasil Diagnosa</th>
+                                <th>Jenis Kanker</th>
+                                <th>Dokter</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td>12 Juni 2024 · 09:15</td>
+                                <td>Andi Pratama</td>
+                                <td>Kanker Paru-paru</td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">Positif</span>
+                                </td>
+                                <td>dr. Siti Rahma</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-sm " style="background-color: #7556fd; color:black;">Detail</a>
+                                    <a href="#" class="btn btn-sm btn-secondary">Cetak</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td>10 Juni 2024 · 14:30</td>
+                                <td>Siti Aminah</td>
+                                <td>Kanker Payudara</td>
+                                <td class="text-center">
+                                    <span class="">Negatif</span>
+                                </td>
+                                <td>dr. Budi Santoso</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-sm " style="background-color: #7556fd; color:black;">Detail</a>
+                                    <a href="#" class="btn btn-sm btn-secondary">Cetak</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">3</td>
+                                <td>8 Juni 2024 · 11:00</td>
+                                <td>Rina Wijaya</td>
+                                <td>Kanker Prostat</td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">Positif</span>
+                                </td>
+                                <td>dr. Siti Rahma</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-sm " style="background-color: #7556fd; color:black;">Detail</a>
+                                    <a href="#" class="btn btn-sm btn-secondary">Cetak</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">4</td>
+                                <td>5 Juni 2024 · 16:45</td>
+                                <td>Bambang Setiawan</td>
+                                <td>Kanker Paru-paru</td>
+                                <td class="text-center">
+                                    <span class="">Negatif</span>
+                                </td>
+                                <td>dr. Budi Santoso</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-sm " style="background-color: #7556fd; color:black;">Detail</a>
+                                    <a href="#" class="btn btn-sm btn-secondary">Cetak</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav>
+                        <ul class="pagination justify-content-center flex-wrap">
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item"><a class="page-link" href="#">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#">10</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Contoh data dummy, ganti dengan data dinamis jika perlu
+    const dataJenisKanker = {
+        labels: ['Paru-paru', 'Payudara', 'Prostat'],
+        datasets: [{
+            label: 'Jumlah Kasus',
+            data: [120, 200, 80],
+            backgroundColor: [
+                'rgba(0, 0, 0, 0.7)',
+                'rgba(0, 0, 0, 0.7)',
+                'rgba(0, 0, 0, 0.7)'
+            ],
+            borderColor: [
+                'rgba(0, 0, 0, 1)',
+                'rgba(0, 0, 0, 1)',
+                'rgba(0, 0, 0, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const configJenisKanker = {
+        type: 'bar',
+
+        data: dataJenisKanker,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 20 }
+                }
+            }
+        }
+    };
+
+    window.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('barChartJenisKanker').getContext('2d');
+        window.barChartJenisKanker = new Chart(ctx, configJenisKanker);
+    });
+</script>
+<script>
+    // Responsive chart sizing
+    function resizeCharts() {
+        const lineChart = document.getElementById('lineChart');
+        if (lineChart) {
+            lineChart.width = lineChart.parentElement.offsetWidth;
+            lineChart.height = Math.max(220, lineChart.parentElement.offsetHeight);
+        }
+    }
+    window.addEventListener('resize', resizeCharts);
+
+    // Chart.js
+    let lineChartInstance;
+    function renderCharts() {
+        const ctx1 = document.getElementById('lineChart').getContext('2d');
+        if (lineChartInstance) lineChartInstance.destroy();
+        lineChartInstance = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Laptops',
+                    data: [12, 19, 3, 5, 2],
+                    borderColor: 'black',
+                    fill: false
+                }, {
+                    label: 'Headsets',
+                    data: [2, 3, 20, 5, 1],
+                    borderColor: 'gray',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+        resizeCharts();
+        renderCharts();
+    });
+    window.addEventListener('resize', function () {
+        resizeCharts();
+        renderCharts();
+    });
+</script>
+{% endblock %}

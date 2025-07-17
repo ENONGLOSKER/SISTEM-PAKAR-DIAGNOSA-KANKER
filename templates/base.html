@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cancer Diagnosis Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Navbar (for mobile toggle) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom d-md-none navbar-sticky">
+        <div class="container-fluid">
+            <button class="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar">
+                ☰
+            </button>
+            <strong>Cancer Diagnosis</strong>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column align-items-center">
+            <div class="sidebar-title">Cancer Diagnosis</div>
+            <a href="{% url 'dashboard' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}" title="Dashboard">
+                <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard" style="width: 32px; height: 32px;">
+            </a>
+            <a href="{% url 'diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="Diagnosa">
+                <img src="{% static 'img/sd-chart-bar.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
+            </a>
+            <a href="{% url 'gejala_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":7" == 'gejala_' and not request.resolver_match.url_name|slice:":14" == 'gejala_diagnosa' %} active{% endif %}" title="Gejala">
+                <img src="{% static 'img/sd-folder-cog.svg' %}" alt="Gejala" style="width: 32px; height: 32px;">
+            </a>
+            <a href="{% url 'penyakit_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'penyakit' %} active{% endif %}" title="Penyakit">
+                <img src="{% static 'img/sd-folder-cog.svg' %}" alt="Penyakit" style="width: 32px; height: 32px;">
+            </a>
+            <a href="{% url 'aturan_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'aturan' %} active{% endif %}" title="Aturan">
+                <img src="{% static 'img/sd-folder-cog.svg' %}" alt="Aturan" style="width: 32px; height: 32px;">
+            </a>
+            <!-- Tambahkan menu pasien -->
+            <a href="{% url 'pasien_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'pasien' %} active{% endif %}" title="Pasien">
+                <img src="{% static 'img/sd-folder-cog.svg' %}" alt="Pasien" style="width: 32px; height: 32px;">
+            </a>
+            <!-- Settings page is not defined in urls.py, so keep as is or remove if not needed -->
+            <a href="#" class="sidebar-icon" title="Setting">
+                <img src="{% static 'img/sd-folder-cog.svg' %}" alt="Setting" style="width: 32px; height: 32px;">
+            </a>
+        </div>
+    </div>
+
+    <!-- Layout -->
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <!-- Sidebar -->
+            <nav class="col-md-2 col-lg-1 d-none d-md-flex sidebar px-0">
+                <div class="sidebar-title">Cancer Diagnosis</div>
+                <a href="{% url 'dashboard' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}" title="Dashboard">
+                    <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard" style="width: 32px; height: 32px;">
+                </a>
+                <a href="{% url 'pasien_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'pasien' %} active{% endif %}" title="Pasien">
+                    <img src="{% static 'img/icon-pasien.svg' %}" alt="Pasien" style="width: 32px; height: 32px;">
+                </a>
+                <a href="{% url 'gejala_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":7" == 'gejala_' and not request.resolver_match.url_name|slice:":14" == 'gejala_diagnosa' %} active{% endif %}" title="Gejala">
+                    <img src="{% static 'img/icon-gejala.svg' %}" alt="Gejala" style="width: 32px; height: 32px;">
+                </a>
+                <a href="{% url 'penyakit_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'penyakit' %} active{% endif %}" title="Penyakit">
+                    <img src="{% static 'img/icon-penyakit.svg' %}" alt="Penyakit" style="width: 32px; height: 32px;">
+                </a>
+                <a href="{% url 'aturan_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'aturan' %} active{% endif %}" title="Aturan">
+                    <img src="{% static 'img/icon-aturan.svg' %}" alt="Aturan" style="width: 32px; height: 32px;">
+                </a>
+                <a href="{% url 'diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="Diagnosa">
+                    <img src="{% static 'img/icon-diagnosa.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
+                </a>
+            </nav>
+
+            <!-- Main content -->
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Contoh data dummy, ganti dengan data dinamis jika perlu
+        const dataJenisKanker = {
+            labels: ['Paru-paru', 'Payudara', 'Prostat'],
+            datasets: [{
+                label: 'Jumlah Kasus',
+                data: [120, 200, 80],
+                backgroundColor: [
+                    'rgba(0, 0, 0, 0.7)',
+                    'rgba(0, 0, 0, 0.7)',
+                    'rgba(0, 0, 0, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(0, 0, 0, 1)',
+                    'rgba(0, 0, 0, 1)',
+                    'rgba(0, 0, 0, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const configJenisKanker = {
+            type: 'bar',
+
+            data: dataJenisKanker,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 20 }
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('barChartJenisKanker').getContext('2d');
+            window.barChartJenisKanker = new Chart(ctx, configJenisKanker);
+        });
+    </script>
+    <script>
+        // Responsive chart sizing
+        function resizeCharts() {
+            const lineChart = document.getElementById('lineChart');
+            if (lineChart) {
+                lineChart.width = lineChart.parentElement.offsetWidth;
+                lineChart.height = Math.max(220, lineChart.parentElement.offsetHeight);
+            }
+        }
+        window.addEventListener('resize', resizeCharts);
+
+        // Chart.js
+        let lineChartInstance;
+        function renderCharts() {
+            const ctx1 = document.getElementById('lineChart').getContext('2d');
+            if (lineChartInstance) lineChartInstance.destroy();
+            lineChartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Laptops',
+                        data: [12, 19, 3, 5, 2],
+                        borderColor: 'black',
+                        fill: false
+                    }, {
+                        label: 'Headsets',
+                        data: [2, 3, 20, 5, 1],
+                        borderColor: 'gray',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            resizeCharts();
+            renderCharts();
+        });
+        window.addEventListener('resize', function () {
+            resizeCharts();
+            renderCharts();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

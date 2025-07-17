@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Data {{ form_name|default:"Form" }}{% endblock %}
+
+{% block content %}
+<style>
+.custom-form label {
+    font-weight: 500;
+    color: #4b4b4b;
+    margin-bottom: 6px;
+}
+.custom-form input,
+.custom-form select,
+.custom-form textarea {
+    border-radius: 8px !important;
+    border: 1px solid #d0c7fe !important;
+    background: #f8f9fa !important;
+    padding: 10px 14px !important;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    box-shadow: none !important;
+    transition: border-color 0.2s;
+}
+.custom-form input:focus,
+.custom-form select:focus,
+.custom-form textarea:focus {
+    border-color: #7556fd !important;
+    background: #fff !important;
+    outline: none;
+}
+.custom-form .form-group {
+    margin-bottom: 18px;
+}
+.custom-form .btn-primary {
+    background: linear-gradient(to right, #5711e2 0%, #7556fd 100%);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 8px 28px;
+}
+.custom-form .btn-secondary {
+    border-radius: 8px;
+    margin-left: 8px;
+    font-weight: 400;
+    padding: 8px 28px;
+}
+.custom-form .helptext {
+    font-size: 0.92em;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    display: block;
+}
+.custom-form ul.errorlist {
+    color: #d9534f;
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    list-style: none;
+    font-size: 0.97em;
+}
+/* Tambahan untuk memperbesar virus.png */
+.virus-container .animated-virus {
+    width: 800px;
+    height: 850px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 390px;
+}
+</style>
+
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Data Form {{ form_name|default:"" }}</h5>
+        <div class="text-end">
+            <div class="fw-bold">
+                {{ request.user.get_full_name|default:request.user.username }}
+            </div>
+            <small class="text-muted">
+                {{ request.user.groups.first.name|default:"admin" }}
+            </small>
+        </div>
+    </div>
+
+    <div class="row g-3 px-3 mt-3">
+        <!-- Informasi Card -->
+        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+            <div class="virus-container">
+                <img src="{% static 'img/virus.png' %}" alt="Virus Animasi" class="animated-virus">
+            </div>
+        </div>
+        <!-- Form Card -->
+        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 table-card">
+                <h3 class="mb-3">{{ form_fungsi|default:"Tambah" }} Data {{ form_name|default:"" }}</h3>
+                <form method="POST" class="custom-form">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <span class="helptext">{{ field.help_text }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <a href="{% if form_name == 'Pasien' %}{% url 'pasien_list' %}{% else %}#{% endif %}" class="btn btn-secondary">Batal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

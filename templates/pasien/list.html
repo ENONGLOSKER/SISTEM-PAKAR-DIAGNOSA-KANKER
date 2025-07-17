@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Data Pasien {% endblock %}
+{% block content %}
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Data Pasien</h5>
+        <div class="text-end">
+            <div class="fw-bold" style="text-transform: capitalize;">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <small class="text-muted">{{ request.user.email|default:"adm@gmail.com" }}</small>
+        </div>
+    </div>
+
+    <!-- Statistic Cards -->
+    <div class="row g-3 p-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100" style="background: linear-gradient(to right, #fffcf0 0%, #feebc7, #fbecc6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Pasien</div>
+                        <h4 class="mb-1">{{ pasien_count|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-pasien.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100" style="background: linear-gradient(to right, #f5fff0 0%, #c7fecb, #d1fbc6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Pasien Laki-Laki</div>
+                        <h4 class="mb-1">{{ laki_laki_count|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-pasien.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100" style="background: linear-gradient(to right, #fff0fb 0%, #fec7fc, #f6c6fb 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Pasien Perempuan</div>
+                        <h4 class="mb-1">{{ perempuan_count|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-pasien.svg' %}" alt="sistem pakar" class="stat-icon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 px-3">
+        <!-- Tabel Data Pasien -->
+        <div class="col-12 col-lg-9 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 table-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Daftar Pasien</h6>
+                    <a href="{% url 'pasien_create' %}" class="btn"
+                       style="background: linear-gradient(to left, #5711e2 0%, #5839e3, #7556fd 100%); color: #fff; font-weight: 300;">
+                        Tambah Pasien
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered mt-3 align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>Nama Pasien</th>
+                                <th>Jenis Kelamin</th>
+                                <th>Usia</th>
+                                <th>Alamat</th>
+                                <th>No. Telepon</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if pasien_list %}
+                                {% for pasien in pasien_list %}
+                                <tr>
+                                    <td class="text-center">
+                                        {% if is_paginated %}
+                                            {{ forloop.counter0|add:page_obj.start_index|add:"-1" }}
+                                        {% else %}
+                                            {{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ pasien.nama }}</td>
+                                    <td class="text-center">{{ pasien.get_jenis_kelamin_display }}</td>
+                                    <td class="text-center">{{ pasien.usia }}</td>
+                                    <td>{{ pasien.alamat }}</td>
+                                    <td>{{ pasien.no_hp }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'pasien_update' pasien.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                                        <a href="{% url 'pasien_delete' pasien.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data pasien ini?')">Hapus</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Tidak ada data pasien.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    {% if is_paginated %}
+                    <nav>
+                        <ul class="pagination justify-content-center flex-wrap">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                            {% endif %}
+                            {% for num in paginator.page_range %}
+                                {% if num == page_obj.number %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                {% elif num == 1 or num == paginator.num_pages %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Info menarik tentang menu pasien -->
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h6 class="">Riwayat Pasien Terbaru</h6>
+                    <p style="font-size: 12px; color: #555;">
+                        Berikut adalah daftar 5 pasien yang terakhir ditambahkan ke sistem.
+                    </p>
+                    <hr>
+                    <ul class="list-group mb-2" style="font-size: 13px;">
+                        {% if pasien_terbaru %}
+                            {% for pasien in pasien_terbaru %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-2">
+                                    <div>
+                                        <strong>{{ pasien.nama|default:"-" }}</strong>
+                                        <br>
+                                        <span class="text-muted" style="font-size:11px;">
+                                            {% if pasien.jenis_kelamin == "L" %}
+                                                Laki-laki
+                                            {% elif pasien.jenis_kelamin == "P" %}
+                                                Perempuan
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                            {% if pasien.usia %}, {{ pasien.usia }} th{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="badge bg-light text-muted" style="font-size:10px;">
+                                            {{ pasien.dibuat|date:"d M Y H:i" }}
+                                        </span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-muted text-center py-2 px-2">Belum ada data pasien.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

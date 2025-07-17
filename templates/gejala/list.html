@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Data Gejala {% endblock %}
+{% block content %}
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Data Gejala</h5>
+        <div class="text-end">
+            <div class="fw-bold" style="text-transform: capitalize;">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <small class="text-muted">{{ request.user.email|default:"adm@gmail.com" }}</small>
+        </div>
+    </div>
+
+    <!-- Statistic Card -->
+    <!-- <div class="row g-3 p-3">
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card card-custom p-3 h-100" style="background: linear-gradient(to right, #f0f7ff 0%, #c7e3fe, #c6e3fb 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Gejala</div>
+                        <h4 class="mb-1">{{ gejala_count|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-gejala.svg' %}" alt="icon gejala" class="stat-icon">
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="row g-3 px-3 mt-3">
+        <!-- Tabel Data Gejala -->
+        <div class="col-12 col-lg-9 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 table-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Daftar Gejala</h6>
+                    <a href="{% url 'gejala_create' %}" class="btn"
+                       style="background: linear-gradient(to left, #5711e2 0%, #5839e3, #7556fd 100%); color: #fff; font-weight: 300;">
+                        Tambah Gejala
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered mt-3 align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>Kode Gejala</th>
+                                <th>Nama Gejala</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if gejala_list %}
+                                {% for gejala in gejala_list %}
+                                <tr>
+                                    <td class="text-center">{{ forloop.counter }}</td>
+                                    <td class="text-center">{{ gejala.kode }}</td>
+                                    <td>{{ gejala.nama }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'gejala_update' gejala.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                                        <a href="{% url 'gejala_delete' gejala.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data gejala ini?')">Hapus</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Tidak ada data gejala.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info menarik tentang menu gejala -->
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h6 class="">Tentang Data Gejala</h6>
+                    <p style="font-size: 12px; color: #555;">
+                        Data gejala digunakan sebagai dasar dalam proses diagnosa penyakit kanker. Pastikan data gejala sudah lengkap dan sesuai.
+                    </p>
+                    <hr>
+                    <ul class="list-group mb-2" style="font-size: 13px;">
+                        {% if gejala_list %}
+                            {% for gejala in gejala_list|slice:":5" %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-2">
+                                    <div>
+                                        <strong>{{ gejala.kode|default:"-" }}</strong> - {{ gejala.nama|default:"-" }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-muted text-center py-2 px-2">Belum ada data gejala.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
