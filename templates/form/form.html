@@ -112,9 +112,9 @@
                             {% endif %}
                         </div>
                     {% endfor %}
-                    <div class="d-flex">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="d-flex g-3">
                         <a href="{% if form_name == 'Pasien' %}{% url 'pasien_list' %}{% else %}#{% endif %}" class="btn btn-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary ms-3">Simpan</button>
                     </div>
                 </form>
             </div>

@@ -11,6 +11,24 @@
         </div>
     </div>
 
+    <!-- Search Form -->
+    {% if search_form %}
+    <div class="p-3 bg-light border-bottom">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                {{ search_form.nama }}
+            </div>
+            <div class="col-md-3">
+                {{ search_form.jenis_kelamin }}
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Cari</button>
+                <a href="{% url 'pasien_list' %}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
     <!-- Statistic Cards -->
     <div class="row g-3 p-3">
         <div class="col-12 col-sm-6 col-lg-3">
@@ -66,18 +84,19 @@
                                 <th>No</th>
                                 <th>Nama Pasien</th>
                                 <th>Jenis Kelamin</th>
-                                <th>Usia</th>
+                                <th>Tanggal Lahir</th>
+                                <th>Umur</th>
                                 <th>Alamat</th>
                                 <th>No. Telepon</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% if pasien_list %}
-                                {% for pasien in pasien_list %}
+                            {% if page_obj %}
+                            {% for pasien in page_obj %}
                                 <tr>
                                     <td class="text-center">
-                                        {% if is_paginated %}
+                                        {% if page_obj.has_other_pages %}
                                             {{ forloop.counter0|add:page_obj.start_index|add:"-1" }}
                                         {% else %}
                                             {{ forloop.counter }}
@@ -85,10 +104,24 @@
                                     </td>
                                     <td>{{ pasien.nama }}</td>
                                     <td class="text-center">{{ pasien.get_jenis_kelamin_display }}</td>
-                                    <td class="text-center">{{ pasien.usia }}</td>
-                                    <td>{{ pasien.alamat }}</td>
-                                    <td>{{ pasien.no_hp }}</td>
                                     <td class="text-center">
+                                        {% if pasien.tanggal_lahir %}
+                                        {{ pasien.tanggal_lahir|date:"d/m/Y" }}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if pasien.umur %}
+                                            {{ pasien.umur }} th
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ pasien.alamat|default:"-" }}</td>
+                                        <td>{{ pasien.no_hp|default:"-" }}</td>
+                                        <td class="text-center">
+                                            <a href="{% url 'pasien_detail' pasien.id %}" class="btn btn-sm btn-info">Detail</a>
                                         <a href="{% url 'pasien_update' pasien.id %}" class="btn btn-sm btn-secondary">Edit</a>
                                         <a href="{% url 'pasien_delete' pasien.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data pasien ini?')">Hapus</a>
                                     </td>
@@ -96,35 +129,42 @@
                                 {% endfor %}
                             {% else %}
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted">Tidak ada data pasien.</td>
+                                    <td colspan="8" class="text-center text-muted">Tidak ada data pasien.</td>
                                 </tr>
                             {% endif %}
                         </tbody>
                     </table>
-                    {% if is_paginated %}
+                    {% if page_obj.has_other_pages %}
                     <nav>
                         <ul class="pagination justify-content-center flex-wrap">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                                    <a class="page-link"
+                                        href="?page={{ page_obj.previous_page_number }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.jenis_kelamin %}&jenis_kelamin={{ request.GET.jenis_kelamin }}{% endif %}">&laquo;</a>
                                 </li>
                             {% else %}
                                 <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
                             {% endif %}
-                            {% for num in paginator.page_range %}
+                            {% for num in page_obj.paginator.page_range %}
                                 {% if num == page_obj.number %}
                                     <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                                 {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                                {% elif num == 1 or num == paginator.num_pages %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.jenis_kelamin %}&jenis_kelamin={{ request.GET.jenis_kelamin }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.jenis_kelamin %}&jenis_kelamin={{ request.GET.jenis_kelamin }}{% endif %}">{{ num }}</a>
+                                    </li>
                                 {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
                                     <li class="page-item disabled"><span class="page-link">...</span></li>
                                 {% endif %}
                             {% endfor %}
+                            
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                                    <a class="page-link"
+                                        href="?page={{ page_obj.next_page_number }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.jenis_kelamin %}&jenis_kelamin={{ request.GET.jenis_kelamin }}{% endif %}">&raquo;</a>
                                 </li>
                             {% else %}
                                 <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
@@ -146,8 +186,8 @@
                     </p>
                     <hr>
                     <ul class="list-group mb-2" style="font-size: 13px;">
-                        {% if pasien_terbaru %}
-                            {% for pasien in pasien_terbaru %}
+                        {% if page_obj %}
+                        {% for pasien in page_obj|slice:":5" %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-2">
                                     <div>
                                         <strong>{{ pasien.nama|default:"-" }}</strong>
@@ -160,7 +200,7 @@
                                             {% else %}
                                                 -
                                             {% endif %}
-                                            {% if pasien.usia %}, {{ pasien.usia }} th{% endif %}
+                                            {% if pasien.umur %}, {{ pasien.umur }} th{% endif %}
                                         </span>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">

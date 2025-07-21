@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Data Penyakit {% endblock %}
+{% block content %}
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Data Penyakit</h5>
+        <div class="text-end">
+            <div class="fw-bold" style="text-transform: capitalize;">{{
+                request.user.get_full_name|default:request.user.username }}</div>
+            <small class="text-muted">{{ request.user.email|default:"adm@gmail.com" }}</small>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    {% if search_form %}
+    <div class="p-3 bg-light border-bottom">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                {{ search_form.nama }}
+            </div>
+            <div class="col-md-3">
+                {{ search_form.tingkat_keganasan }}
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Cari</button>
+                <a href="{% url 'penyakit_list' %}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Statistic Cards -->
+    <div class="row g-3 p-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #f0f7ff 0%, #c7e3fe, #c6e3fb 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Total Penyakit</div>
+                        <h4 class="mb-1">{{ penyakit_count|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-penyakit.svg' %}" alt="icon penyakit" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #fff0f0 0%, #fec7c7, #fbc6c6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Keganasan Rendah</div>
+                        <h4 class="mb-1">{{ penyakit_rendah|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-penyakit.svg' %}" alt="icon penyakit" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #f0fff0 0%, #c7fec7, #c6fbc6 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Keganasan Sedang</div>
+                        <h4 class="mb-1">{{ penyakit_sedang|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-penyakit.svg' %}" alt="icon penyakit" class="stat-icon">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card card-custom p-3 h-100"
+                style="background: linear-gradient(to right, #fff0ff 0%, #fec7fe, #fbc6fb 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div>Keganasan Tinggi</div>
+                        <h4 class="mb-1">{{ penyakit_tinggi|default:"0" }}</h4>
+                    </div>
+                    <img src="{% static 'img/icon-penyakit.svg' %}" alt="icon penyakit" class="stat-icon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 px-3">
+        <!-- Tabel Data Penyakit -->
+        <div class="col-12 col-lg-9 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 table-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Daftar Penyakit</h6>
+                    <a href="{% url 'penyakit_create' %}" class="btn"
+                        style="background: linear-gradient(to left, #5711e2 0%, #5839e3, #7556fd 100%); color: #fff; font-weight: 300;">
+                        Tambah Penyakit
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered mt-3 align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>Kode</th>
+                                <th>Nama Penyakit</th>
+                                <th>Tingkat Keganasan</th>
+                                <th>Deskripsi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if page_obj %}
+                            {% for penyakit in page_obj %}
+                            <tr>
+                                <td class="text-center">
+                                    {% if page_obj.has_other_pages %}
+                                    {{ forloop.counter0|add:page_obj.start_index|add:"-1" }}
+                                    {% else %}
+                                    {{ forloop.counter }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">{{ penyakit.kode }}</span>
+                                </td>
+                                <td>
+                                    <strong>{{ penyakit.nama }}</strong>
+                                    {% if penyakit.pengobatan %}
+                                    <br><small class="text-muted">{{ penyakit.pengobatan|truncatechars:50 }}</small>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if penyakit.tingkat_keganasan == 'RENDAH' %}
+                                    <span class="badge bg-success">Rendah</span>
+                                    {% elif penyakit.tingkat_keganasan == 'SEDANG' %}
+                                    <span class="badge bg-warning">Sedang</span>
+                                    {% elif penyakit.tingkat_keganasan == 'TINGGI' %}
+                                    <span class="badge bg-danger">Tinggi</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if penyakit.deskripsi %}
+                                    {{ penyakit.deskripsi|truncatechars:50 }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'penyakit_detail' penyakit.id %}"
+                                        class="btn btn-sm btn-info">Detail</a>
+                                    <a href="{% url 'penyakit_update' penyakit.id %}"
+                                        class="btn btn-sm btn-secondary">Edit</a>
+                                    <a href="{% url 'penyakit_delete' penyakit.id %}" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Yakin hapus data penyakit ini?')">Hapus</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Tidak ada data penyakit.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    {% if page_obj.has_other_pages %}
+                    <nav>
+                        <ul class="pagination justify-content-center flex-wrap">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.previous_page_number }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.tingkat_keganasan %}&tingkat_keganasan={{ request.GET.tingkat_keganasan }}{% endif %}">&laquo;</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                            {% if num == page_obj.number %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %} <li
+                                class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ num }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.tingkat_keganasan %}&tingkat_keganasan={{ request.GET.tingkat_keganasan }}{% endif %}">{{
+                                    num }}</a>
+                                </li>
+                                {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ num }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.tingkat_keganasan %}&tingkat_keganasan={{ request.GET.tingkat_keganasan }}{% endif %}">{{
+                                        num }}</a>
+                                </li>
+                                {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ page_obj.next_page_number }}{% if request.GET.nama %}&nama={{ request.GET.nama }}{% endif %}{% if request.GET.tingkat_keganasan %}&tingkat_keganasan={{ request.GET.tingkat_keganasan }}{% endif %}">&raquo;</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                                {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Info menarik tentang menu penyakit -->
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h6 class="">Penyakit Terbaru</h6>
+                    <p style="font-size: 12px; color: #555;">
+                        Berikut adalah daftar 5 penyakit yang terakhir ditambahkan ke sistem.
+                    </p>
+                    <hr>
+                    <ul class="list-group mb-2" style="font-size: 13px;">
+                        {% if page_obj %}
+                        {% for penyakit in page_obj|slice:":5" %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-2">
+                            <div>
+                                <strong>{{ penyakit.kode|default:"-" }}</strong> - {{ penyakit.nama|default:"-" }}
+                                <br>
+                                <span class="text-muted" style="font-size:11px;">
+                                    {% if penyakit.tingkat_keganasan == "RENDAH" %}
+                                    Keganasan Rendah
+                                    {% elif penyakit.tingkat_keganasan == "SEDANG" %}
+                                    Keganasan Sedang
+                                    {% elif penyakit.tingkat_keganasan == "TINGGI" %}
+                                    Keganasan Tinggi
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="badge bg-light text-muted" style="font-size:10px;">
+                                    {{ penyakit.dibuat|date:"d M Y H:i" }}
+                                </span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li class="list-group-item text-muted text-center py-2 px-2">Belum ada data penyakit.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

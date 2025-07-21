@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Detail Pasien - {{ pasien.nama }} {% endblock %}
+{% block content %}
+<main class="col-md-10 col-lg-11 col-12 main-content">
+    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'pasien_list' %}" class="btn btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <h5 class="mb-0">Detail Pasien</h5>
+        </div>
+        <div class="text-end">
+            <div class="fw-bold" style="text-transform: capitalize;">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <small class="text-muted">{{ request.user.email|default:"adm@gmail.com" }}</small>
+        </div>
+    </div>
+
+    <div class="row g-3 p-3">
+        <!-- Informasi Pasien -->
+        <div class="col-12 col-lg-4">
+            <div class="card card-custom p-3 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{% static 'img/icon-pasien.svg' %}" alt="pasien" class="me-3" style="width: 40px;">
+                    <h6 class="mb-0">Informasi Pasien</h6>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Nama Lengkap</label>
+                        <p class="mb-0">{{ pasien.nama }}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-muted">Jenis Kelamin</label>
+                        <p class="mb-0">{{ pasien.get_jenis_kelamin_display }}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-muted">Umur</label>
+                        <p class="mb-0">
+                            {% if pasien.umur %}
+                                {{ pasien.umur }} tahun
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Tanggal Lahir</label>
+                        <p class="mb-0">
+                            {% if pasien.tanggal_lahir %}
+                                {{ pasien.tanggal_lahir|date:"d F Y" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Alamat</label>
+                        <p class="mb-0">{{ pasien.alamat|default:"-" }}</p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">No. Telepon</label>
+                        <p class="mb-0">{{ pasien.no_hp|default:"-" }}</p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Riwayat Keluarga</label>
+                        <p class="mb-0">{{ pasien.riwayat_keluarga|default:"-" }}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-muted">Terdaftar</label>
+                        <p class="mb-0">{{ pasien.dibuat|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-muted">Terakhir Update</label>
+                        <p class="mb-0">{{ pasien.diperbarui|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'pasien_update' pasien.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'pasien_delete' pasien.id %}" class="btn btn-danger btn-sm" 
+                       onclick="return confirm('Yakin hapus data pasien ini?')">
+                        <i class="fas fa-trash"></i> Hapus
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Riwayat Diagnosa -->
+        <div class="col-12 col-lg-8">
+            <div class="card card-custom p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Riwayat Diagnosa</h6>
+                    <span class="badge bg-primary">{{ diagnosa_list.count }} diagnosa</span>
+                </div>
+                
+                {% if diagnosa_list %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Status</th>
+                                    <th>Gejala</th>
+                                    <th>Hasil</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for diagnosa in diagnosa_list %}
+                                <tr>
+                                    <td>
+                                        <small class="text-muted">{{ diagnosa.tanggal|date:"d/m/Y" }}</small><br>
+                                        <small>{{ diagnosa.tanggal|date:"H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if diagnosa.status == 'SELESAI' %}
+                                            <span class="badge bg-success">Selesai</span>
+                                        {% elif diagnosa.status == 'PROSES' %}
+                                            <span class="badge bg-warning">Dalam Proses</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Dibatalkan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ diagnosa.total_gejala }} gejala dipilih</small>
+                                    </td>
+                                    <td>
+                                        {% if diagnosa.hasil_ds.exists %}
+                                            <span class="badge bg-info">Ada Hasil</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-muted">Belum Ada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'diagnosa_detail' diagnosa.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <img src="{% static 'img/icon-diagnosa.svg' %}" alt="diagnosa" style="width: 80px; opacity: 0.5;" class="mb-3">
+                        <h6 class="text-muted">Belum ada riwayat diagnosa</h6>
+                        <p class="text-muted small">Pasien ini belum pernah melakukan diagnosa</p>
+                        <a href="#" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Buat Diagnosa Baru
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistik Diagnosa -->
+    {% if diagnosa_list %}
+    <div class="row g-3 px-3">
+        <div class="col-12">
+            <div class="card card-custom p-3">
+                <h6 class="mb-3">Statistik Diagnosa</h6>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="text-primary mb-1">{{ diagnosa_list.count }}</h4>
+                            <small class="text-muted">Total Diagnosa</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="text-success mb-1">
+                                {{ diagnosa_list|dictsort:"status"|length }}
+                            </h4>
+                            <small class="text-muted">Diagnosa Selesai</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="text-warning mb-1">
+                                {{ diagnosa_list|dictsort:"status"|length }}
+                            </h4>
+                            <small class="text-muted">Dalam Proses</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="text-info mb-1">
+                                {% for diagnosa in diagnosa_list %}
+                                    {% if diagnosa.hasil_ds.exists %}
+                                        {{ forloop.counter }}
+                                    {% endif %}
+                                {% endfor %}
+                            </h4>
+                            <small class="text-muted">Ada Hasil</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
