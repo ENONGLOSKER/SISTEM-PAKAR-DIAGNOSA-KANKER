@@ -128,14 +128,15 @@ body {
 }
 
 .animated-virus {
-    width: 400px;
-    height: 400px;
+    width: 560px;
+    height: 520px;
     animation:
         float 6s ease-in-out infinite,
         spin 8s linear infinite,
         pulse 3s ease-in-out infinite alternate;
     transform-style: preserve-3d;
     filter: drop-shadow(0 0 12px rgba(172, 100, 255, 0.6));
+    padding-left: 25px;
 }
 
 @keyframes float {

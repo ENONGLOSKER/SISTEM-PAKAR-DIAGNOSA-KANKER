@@ -17,6 +17,10 @@ from .forms import (
     PencarianPenyakitForm, DiagnosaStep1Form, DiagnosaStep2Form,
     DiagnosaStep3Form
 )
+from django.http import JsonResponse
+from django.db.models.functions import TruncMonth
+from django.db.models import F
+from django.db.models.functions import TruncDate
 
 # Dashboard
 def index(request):
@@ -77,6 +81,125 @@ def dashboard(request):
     }
     return render(request, 'dashboard.html', context)
 
+
+
+def data_korelasi_gejala_penyakit(request):
+    data = (
+        BasisPengetahuan.objects
+        .values('penyakit__nama')
+        .annotate(jumlah_gejala=Count('gejala'))
+        .order_by('-jumlah_gejala')
+    )
+
+    labels = [item['penyakit__nama'] for item in data]
+    values = [item['jumlah_gejala'] for item in data]
+
+    return JsonResponse({'labels': labels, 'data': values})
+
+def data_distribusi_penyakit(request):
+    data = (
+        HasilDS.objects
+        .filter(ranking=1)
+        .values('penyakit__nama')
+        .annotate(jumlah=Count('id'))
+        .order_by('-jumlah')
+    )
+
+    labels = [item['penyakit__nama'] for item in data]
+    values = [item['jumlah'] for item in data]
+
+    return JsonResponse({'labels': labels, 'data': values})
+
+def data_keparahan_gejala(request):
+    data = (
+        GejalaDiagnosa.objects
+        .values('tingkat_keparahan')
+        .annotate(jumlah=Count('id'))
+        .order_by('tingkat_keparahan')
+    )
+
+    # Urutan tetap
+    urutan = ['RINGAN', 'SEDANG', 'BERAT']
+    label_map = {
+        'RINGAN': 'Ringan',
+        'SEDANG': 'Sedang',
+        'BERAT': 'Berat'
+    }
+
+    hasil = {k: 0 for k in urutan}
+    for item in data:
+        hasil[item['tingkat_keparahan']] = item['jumlah']
+
+    labels = [label_map[k] for k in urutan]
+    values = [hasil[k] for k in urutan]
+
+    return JsonResponse({'labels': labels, 'data': values})
+
+def data_gender_pasien(request):
+    data = (
+        Pasien.objects
+        .values('jenis_kelamin')
+        .annotate(jumlah=Count('id'))
+    )
+
+    # Mapping untuk label
+    label_map = {
+        'L': 'Laki-laki',
+        'P': 'Perempuan'
+    }
+
+    hasil = {'L': 0, 'P': 0}
+    for item in data:
+        hasil[item['jenis_kelamin']] = item['jumlah']
+
+    labels = [label_map[k] for k in hasil.keys()]
+    values = [hasil[k] for k in hasil.keys()]
+
+    return JsonResponse({'labels': labels, 'data': values})
+
+def data_tren_diagnosa_per_hari(request):
+    data = (
+        Diagnosa.objects
+        .annotate(tanggal_hari=TruncDate('tanggal'))
+        .values('tanggal_hari')
+        .annotate(jumlah=Count('id'))
+        .order_by('tanggal_hari')
+    )
+
+    labels = [item['tanggal_hari'].strftime('%d %b %Y') for item in data]
+    values = [item['jumlah'] for item in data]
+
+    return JsonResponse({'labels': labels, 'data': values})
+
+def data_akurasi_diagnosa(request):
+    # Ambil hanya hasil dengan ranking terbaik (1)
+    hasil = HasilDS.objects.filter(ranking=1).values_list('nilai_kepercayaan', flat=True)
+
+    # Buat kelompok (binning) manual
+    bins = {
+        '0–20%': 0,
+        '21–40%': 0,
+        '41–60%': 0,
+        '61–80%': 0,
+        '81–100%': 0
+    }
+
+    for nilai in hasil:
+        if nilai <= 0.20:
+            bins['0–20%'] += 1
+        elif nilai <= 0.40:
+            bins['21–40%'] += 1
+        elif nilai <= 0.60:
+            bins['41–60%'] += 1
+        elif nilai <= 0.80:
+            bins['61–80%'] += 1
+        else:
+            bins['81–100%'] += 1
+
+    labels = list(bins.keys())
+    values = list(bins.values())
+
+    return JsonResponse({'labels': labels, 'data': values})
 
 # ------------------ PASIEN ------------------
 def pasien_list(request):

@@ -63,7 +63,7 @@
                     <img src="{% static 'img/shield.svg' %}" alt="Aturan" class="stat-icon">
                 </div>
             </div>
-        </div>                    
+        </div>
     </div>
 
     <!-- Charts -->
@@ -73,7 +73,7 @@
                 <div class="virus-container">
                     <img src="{% static 'img/virus.png' %}" alt="Virus Animasi" class="animated-virus">
                 </div>
-                <i style="font-size: 12px; margin-bottom: 5px; margin-top: -10px;">
+                <i style="font-size: 12px; margin-bottom: 12px; margin-top: 12px;">
                     Silakan gunakan tombol <b>Diagnosa</b> di bawah untuk memulai diagnosis.
                 </i>
                 <button type="button" id="btnDiagnosa" class="btn w-100"
@@ -83,98 +83,107 @@
                 </button>
             </div>
         </div>
-        
-        <!-- Modal -->
-        <div class="modal fade" id="modalDiagnosa" tabindex="-1" aria-labelledby="modalDiagnosaLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalDiagnosaLabel">Mulai Diagnosa</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formDiagnosa" method="post" action="{% url 'proses_diagnosa' %}">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="pasien" class="form-label">Pilih Pasien (Opsional)</label>
-                                <select class="form-select" id="pasien" name="pasien_id">
-                                    <option value="">Pilih pasien (opsional)</option>
-                                    {% for pasien in pasien_list %}
-                                    <option value="{{ pasien.id }}">{{ pasien.nama }}</option>
-                                    {% endfor %}
-                                </select>
-                                <small class="text-muted">Jika tidak memilih pasien, diagnosa akan disimpan dengan nama user</small>
-                            </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Pilih Gejala yang Dialami *</label>
-                                <div class="row">
-                                    {% for gejala in gejala_list %}
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input gejala-checkbox" type="checkbox" name="gejala_ids"
-                                                value="{{ gejala.id }}" id="gejala_{{ gejala.id }}">
-                                            <label class="form-check-label" for="gejala_{{ gejala.id }}">
-                                                <strong>{{ gejala.kode }} - {{ gejala.nama }}</strong>
-                                                <br><small class="text-muted">{{ gejala.pertanyaan }}</small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <small class="text-muted">Pilih minimal satu gejala untuk melanjutkan diagnosa</small>
-                            </div>
-
-                            <div id="gejala-details" style="display: none;">
-                                <h6 class="mt-3 mb-2">Detail Gejala Terpilih</h6>
-                                <div id="gejala-forms"></div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" form="formDiagnosa" class="btn btn-primary" id="btnHitungDiagnosa">
-                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                            Hitung Diagnosa
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Grafik Diagnosis Line Chart -->
-        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+        <!-- Grafik 1-->
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
             <div class="card card-custom p-3 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">Grafik Penyakit Paling Sering Terdeteksi</h6>
-                    <span class="badge bg-primary" style="font-size: 0.85em;">Bulanan</span>
+                    <h6 class="mb-0">Grafik Akurasi Diagnosa Berdasarkan Nilai Kepercayaan</h6>
                 </div>
                 <div style="position:relative; min-height:220px;">
-                    <!-- <canvas id="lineChart"
-                        style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas> -->
-
-                        <canvas id="penyakitChart" height="100"></canvas>
+                    <canvas id="akurasiChart" style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
+                </div>
+                <div id="akurasiInsight" class="alert mt-3 mb-0" role="alert" style="font-size: 12px; background-color: #d6afff90; border: 1px solid #b780f0dc;">
+                    <b>Insight:</b> Memuat insight dinamis...
                 </div>
             </div>
         </div>
-
+        <!-- Grafik 2  -->
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0">
+            <div class="card card-custom p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Grafik Tren Diagnosa per hari</h6>
+                </div>
+                <div style="position:relative; min-height:220px;">
+                    <canvas id="keparahanChart"
+                        style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
+                </div>
+                <div id="keparahanInsight" class="alert mb-0" role="alert" style="margin-top: 20px;  font-size: 12px; background-color: #d6afff90; border: 1px solid #b780f0dc;">
+                    <b>Insight:</b> Memuat insight dinamis...
+                </div>
+            </div>
+        </div>
+        
         <!-- Bar Chart Grafik Jumlah per Jenis Kategori Kanker -->
         <div class="col-12 col-lg-3">
             <div class="card card-custom p-3 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">Grafik Berdasarkan Kategori</h6>
-                    <span class="badge" style="font-size: 0.85em; background-color: #b69cea;">Kategori</span>
+                    <h6 class="mb-0">Grafik Distribusi Jenis Penyakit yang Terdeteksi</h6>
                 </div>
                 <div style="position:relative; min-height:220px;">
-                    <canvas id="barChartJenisKanker"
-                        style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
+                    <canvas id="penyakitChart" style="width:100%;height:100%;min-height:220px;max-width:100%;"></canvas>
                 </div>
-                <div class="mt-2" style="font-size: 0.95em;">
-                    <ul class="mb-0 ps-3">
-                        <li>Kanker Paru-paru</li>
-                        <li>Kanker Payudara</li>
-                        <li>Kanker Prostat</li>
-                    </ul>
+                <div id="distribusipenyakitInsight" class="alert mb-0" role="alert" style="font-size: 12px; background-color: #d6afff90; border: 1px solid #b780f0dc;">
+                    <b>Insight:</b> <span id="penyakitInsightText">Memuat insight dinamis...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalDiagnosa" tabindex="-1" aria-labelledby="modalDiagnosaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDiagnosaLabel">Mulai Diagnosa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formDiagnosa" method="post" action="{% url 'proses_diagnosa' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="pasien" class="form-label">Pilih Pasien (Opsional)</label>
+                            <select class="form-select" id="pasien" name="pasien_id">
+                                <option value="">Pilih pasien (opsional)</option>
+                                {% for pasien in pasien_list %}
+                                <option value="{{ pasien.id }}">{{ pasien.nama }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Jika tidak memilih pasien, diagnosa akan disimpan dengan nama
+                                user</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Gejala yang Dialami *</label>
+                            <div class="row">
+                                {% for gejala in gejala_list %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input gejala-checkbox" type="checkbox"
+                                            name="gejala_ids" value="{{ gejala.id }}" id="gejala_{{ gejala.id }}">
+                                        <label class="form-check-label" for="gejala_{{ gejala.id }}">
+                                            <strong>{{ gejala.kode }} - {{ gejala.nama }}</strong>
+                                            <br><small class="text-muted">{{ gejala.pertanyaan }}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <small class="text-muted">Pilih minimal satu gejala untuk melanjutkan diagnosa</small>
+                        </div>
+
+                        <div id="gejala-details" style="display: none;">
+                            <h6 class="mt-3 mb-2">Detail Gejala Terpilih</h6>
+                            <div id="gejala-forms"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="formDiagnosa" class="btn btn-primary" id="btnHitungDiagnosa">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Hitung Diagnosa
+                    </button>
                 </div>
             </div>
         </div>
@@ -208,22 +217,23 @@
                                 <td>{{ diagnosa.pasien.nama|default:"User" }}</td>
                                 <td>
                                     {% if diagnosa.hasil_ds.first %}
-                                        {{ diagnosa.hasil_ds.first.penyakit.nama }}
+                                    {{ diagnosa.hasil_ds.first.penyakit.nama }}
                                     {% else %}
-                                        <span class="text-muted">Belum diproses</span>
+                                    <span class="text-muted">Belum diproses</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
                                     {% if diagnosa.status == 'SELESAI' %}
-                                        <span class="badge bg-success">Selesai</span>
+                                    <span class="badge bg-success">Selesai</span>
                                     {% elif diagnosa.status == 'PROSES' %}
-                                        <span class="badge bg-warning">Proses</span>
+                                    <span class="badge bg-warning">Proses</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ diagnosa.status }}</span>
+                                    <span class="badge bg-secondary">{{ diagnosa.status }}</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    <a href="{% url 'diagnosa_detail' diagnosa.id %}" class="btn btn-sm btn-primary">Detail</a>
+                                    <a href="{% url 'diagnosa_detail' diagnosa.id %}"
+                                        class="btn btn-sm btn-primary">Detail</a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -246,165 +256,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- <script>
-    // Data untuk grafik kategori kanker
-    const dataJenisKanker = {
-        labels: {{ labels|safe }},
-        datasets: [{
-            label: 'Jumlah Kasus',
-            data: {{ data|safe }},
-            backgroundColor: [
-                'rgba(220, 53, 69, 0.8)',
-                'rgba(255, 193, 7, 0.8)',
-                'rgba(40, 167, 69, 0.8)'
-            ],
-            borderColor: [
-                'rgba(220, 53, 69, 1)',
-                'rgba(255, 193, 7, 1)',
-                'rgba(40, 167, 69, 1)'
-            ],
-            borderWidth: 1
-        }]
-    };
-
-    const configJenisKanker = {
-        type: 'bar',
-        data: dataJenisKanker,
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                title: {
-                    display: false
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    };
-
-    // Data untuk grafik line chart
-    const lineChartData = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-            label: 'Diagnosa Positif',
-            data: [12, 19, 3, 5, 2, 8],
-            borderColor: 'rgba(220, 53, 69, 1)',
-            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-            fill: true
-        }, {
-            label: 'Diagnosa Negatif',
-            data: [2, 3, 20, 5, 1, 4],
-            borderColor: 'rgba(40, 167, 69, 1)',
-            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-            fill: true
-        }]
-    };
-
-    const lineChartConfig = {
-        type: 'line',
-        data: lineChartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: 13
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                y: {
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    window.addEventListener('DOMContentLoaded', function () {
-        // Initialize bar chart
-        const barCtx = document.getElementById('barChartJenisKanker');
-        if (barCtx) {
-            window.barChartJenisKanker = new Chart(barCtx.getContext('2d'), configJenisKanker);
-        }
-
-        // Initialize line chart
-        const lineCtx = document.getElementById('lineChart');
-        if (lineCtx) {
-            window.lineChartInstance = new Chart(lineCtx.getContext('2d'), lineChartConfig);
-        }
-    });
-
-    // Responsive chart sizing
-    function resizeCharts() {
-        const lineChart = document.getElementById('lineChart');
-        const barChart = document.getElementById('barChartJenisKanker');
-        
-        if (lineChart && window.lineChartInstance) {
-            window.lineChartInstance.resize();
-        }
-        if (barChart && window.barChartJenisKanker) {
-            window.barChartJenisKanker.resize();
-        }
-    }
-    
-    window.addEventListener('resize', resizeCharts);
-</script> -->
-<script>
-    const ctx = document.getElementById('penyakitChart').getContext('2d');
-    const penyakitChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ labels|safe }},
-            datasets: [{
-                label: 'Jumlah Kasus',
-                data: {{ data|safe }},
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                borderRadius: 5,
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Jumlah Diagnosa'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Jenis Kanker'
-                    }
-                }
-            }
-        }
-    });
-</script>
-
+<!-- diagnosa form -->
 <script>
     // JavaScript untuk modal diagnosa
     document.addEventListener('DOMContentLoaded', function () {

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cancer Diagnosis Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/db.css' %}">
 </head>
 
 <body>
@@ -30,8 +30,11 @@
         </div>
         <div class="offcanvas-body d-flex flex-column align-items-center">
             <div class="sidebar-title">Cancer Diagnosis</div>
-            <a href="{% url 'dashboard' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}" title="Dashboard">
-                <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard" style="width: 32px; height: 32px;">
+            <a href="{% url 'dashboard' %}"
+                class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}"
+                title="Dashboard">
+                <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard"
+                    style="width: 32px; height: 32px;">
             </a>
             <a href="{% url 'pasien_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'pasien' %} active{% endif %}" title="Pasien">
                 <img src="{% static 'img/icon-pasien.svg' %}" alt="Pasien" style="width: 32px; height: 32px;">
@@ -48,6 +51,12 @@
             <a href="{% url 'diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="Diagnosa">
                 <img src="{% static 'img/icon-diagnosa.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
             </a>
+            <a href="{% url 'gejala_diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'gejala_diagnosa_list' %} active{% endif %}" title="Diagnosa Gejala">
+                <img src="{% static 'img/icon-diagnosagejala.svg' %}" alt="Diagnosa Gejala" style="width: 32px; height: 32px;">
+            </a>
+            <a href="{% url 'hasil_list' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'hasil_list' %} active{% endif %}" title="Hasil">
+                <img src="{% static 'img/icon-hasil.svg' %}" alt="Hasil" style="width: 32px; height: 32px;">
+            </a>
             <!-- Jika ada menu tambahan lain, tambahkan di sini sesuai url yang ada -->
         </div>
     </div>
@@ -58,8 +67,11 @@
             <!-- Sidebar -->
             <nav class="col-md-2 col-lg-1 d-none d-md-flex sidebar px-0">
                 <div class="sidebar-title">Cancer Diagnosis</div>
-                <a href="{% url 'dashboard' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}" title="Dashboard">
-                    <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard" style="width: 32px; height: 32px;">
+                <a href="{% url 'dashboard' %}"
+                    class="sidebar-icon{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'index' %} active{% endif %}"
+                    title="Dashboard">
+                    <img src="{% static 'img/sd-car-speed-limiter.svg' %}" alt="Dashboard"
+                        style="width: 32px; height: 32px;">
                 </a>
                 <a href="{% url 'pasien_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":6" == 'pasien' %} active{% endif %}" title="Pasien">
                     <img src="{% static 'img/icon-pasien.svg' %}" alt="Pasien" style="width: 32px; height: 32px;">
@@ -76,11 +88,11 @@
                 <a href="{% url 'diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="Diagnosa">
                     <img src="{% static 'img/icon-diagnosa.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
                 </a>
-                <a href="{% url 'gejala_diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="DiagnosaGejala">
-                    <img src="{% static 'img/icon-diagnosagejala.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
+                <a href="{% url 'gejala_diagnosa_list' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'gejala_diagnosa_list' %} active{% endif %}" title="Diagnosa Gejala">
+                    <img src="{% static 'img/icon-diagnosagejala.svg' %}" alt="Diagnosa Gejala" style="width: 32px; height: 32px;">
                 </a>
-                <a href="{% url 'hasil_list' %}" class="sidebar-icon{% if request.resolver_match.url_name|slice:":8" == 'diagnosa_' %} active{% endif %}" title="Hasil">
-                    <img src="{% static 'img/icon-hasil.svg' %}" alt="Diagnosa" style="width: 32px; height: 32px;">
+                <a href="{% url 'hasil_list' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'hasil_list' %} active{% endif %}" title="Hasil">
+                    <img src="{% static 'img/icon-hasil.svg' %}" alt="Hasil" style="width: 32px; height: 32px;">
                 </a>
                 <!-- Jika ada menu tambahan lain, tambahkan di sini sesuai url yang ada -->
             </nav>
@@ -93,111 +105,110 @@
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- grafik 1 akurasi diagnosaa-->
     <script>
-        // Contoh data dummy, ganti dengan data dinamis jika perlu
-        const dataJenisKanker = {
-            labels: ['Paru-paru', 'Payudara', 'Prostat'],
-            datasets: [{
-                label: 'Jumlah Kasus',
-                data: [120, 200, 80],
-                backgroundColor: [
-                    'rgba(0, 0, 0, 0.7)',
-                    'rgba(0, 0, 0, 0.7)',
-                    'rgba(0, 0, 0, 0.7)'
-                ],
-                borderColor: [
-                    'rgba(0, 0, 0, 1)',
-                    'rgba(0, 0, 0, 1)',
-                    'rgba(0, 0, 0, 1)'
-                ],
-                borderWidth: 1
-            }]
-        };
+        let lineChartInstance;
 
-        const configJenisKanker = {
-            type: 'bar',
+        async function fetchKorelasiData() {
+            const response = await fetch("{% url 'data_akurasi_diagnosa' %}");
+            return await response.json();
+        }
 
-            data: dataJenisKanker,
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 20 }
-                    }
-                }
-            }
-        };
-
-        window.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('barChartJenisKanker').getContext('2d');
-            window.barChartJenisKanker = new Chart(ctx, configJenisKanker);
-        });
-    </script>
-    <script>
-        // Responsive chart sizing
         function resizeCharts() {
-            const lineChart = document.getElementById('lineChart');
-            if (lineChart) {
-                lineChart.width = lineChart.parentElement.offsetWidth;
-                lineChart.height = Math.max(220, lineChart.parentElement.offsetHeight);
+            const chart = document.getElementById('akurasiChart');
+            if (chart) {
+                chart.width = chart.parentElement.offsetWidth;
+                chart.height = Math.max(220, chart.parentElement.offsetHeight);
             }
         }
-        window.addEventListener('resize', resizeCharts);
 
-        // Chart.js
-        let lineChartInstance;
-        function renderCharts() {
-            const ctx1 = document.getElementById('lineChart').getContext('2d');
+        // Fungsi untuk menghasilkan warna dinamis
+        function getDynamicColors(count) {
+            // Palet warna yang menarik, bisa ditambah sesuai kebutuhan
+            const palette = [
+                '#A96EFF', // pastel indigo
+                '#6EB2FF', // pastel biru muda
+                '#FFE26E', // pastel hijau toska
+                'rgba(99, 255, 184, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)'
+            ];
+            const borderPalette = [
+                'rgba(167, 99, 255, 1)',
+                'rgba(99, 205, 255, 1)',
+                'rgba(255, 184, 99, 1)',
+                'rgba(99, 255, 184, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ];
+            let bgColors = [];
+            let borderColors = [];
+            for (let i = 0; i < count; i++) {
+                bgColors.push(palette[i % palette.length]);
+                borderColors.push(borderPalette[i % borderPalette.length]);
+            }
+            return { bgColors, borderColors };
+        }
+
+        async function renderCharts() {
+            const ctx = document.getElementById('akurasiChart').getContext('2d');
+            const chartData = await fetchKorelasiData();
+
             if (lineChartInstance) lineChartInstance.destroy();
-            lineChartInstance = new Chart(ctx1, {
-                type: 'line',
+
+            // Gunakan warna dinamis
+            const { bgColors, borderColors } = getDynamicColors(chartData.data.length);
+
+            lineChartInstance = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    labels: chartData.labels,
                     datasets: [{
-                        label: 'Laptops',
-                        data: [12, 19, 3, 5, 2],
-                        borderColor: 'black',
-                        fill: false
-                    }, {
-                        label: 'Headsets',
-                        data: [2, 3, 20, 5, 1],
-                        borderColor: 'gray',
-                        fill: false
+                        label: 'Jumlah Gejala',
+                        data: chartData.data,
+                        backgroundColor: bgColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
                     }]
                 },
                 options: {
+                    indexAxis: 'y',  // HAPUS agar vertical (default)
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            labels: {
-                                font: {
-                                    size: 13
-                                }
-                            }
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
                         }
                     },
                     scales: {
                         x: {
-                            ticks: {
-                                font: {
-                                    size: 12
-                                }
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Nilai Kepercayaan (%)'
                             }
                         },
                         y: {
+                            title: {
+                                display: true,
+                                text: 'Jumlah Diagnosa'
+                            },
                             ticks: {
-                                font: {
-                                    size: 12
-                                }
+                                font: { size: 12 }
                             }
                         }
                     }
@@ -205,16 +216,309 @@
             });
         }
 
-        window.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('DOMContentLoaded', () => {
             resizeCharts();
             renderCharts();
         });
-        window.addEventListener('resize', function () {
+
+        window.addEventListener('resize', () => {
             resizeCharts();
             renderCharts();
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- grafik 2 dignosa tren  -->
+    <script>
+        let keparahanChart;
+
+        async function fetchKeparahanData() {
+            const response = await fetch("{% url 'data_tren_diagnosa_per_hari' %}");
+            return await response.json();
+        }
+
+        async function renderKeparahanChart() {
+            const ctx = document.getElementById('keparahanChart').getContext('2d');
+            const chartData = await fetchKeparahanData();
+
+            // Set all bars to the same color as requested
+            const backgroundColors = Array(chartData.data.length).fill('rgba(167, 99, 255, 0.6)');
+            const borderColors = Array(chartData.data.length).fill('rgba(167, 99, 255, 1)');
+
+            if (keparahanChart) keparahanChart.destroy();
+
+            keparahanChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Jumlah Gejala',
+                        data: chartData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw} gejala`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tingkat Keparahan'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Gejala'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', renderKeparahanChart);
+    </script>
+
+    <!-- ================================================================================ -->
+
+    <!-- insight akurasi -->
+    <script>
+        // Fungsi untuk menghasilkan insight dinamis berdasarkan data chart
+        function generateAkurasiInsight(labels, data) {
+            // Asumsi urutan: ['0–20%', '21–40%', '41–60%', '61–80%', '81–100%']
+            const highIdx = labels.findIndex(l => l.includes('81'));
+            const lowIdx = labels.findIndex(l => l.includes('0–20'));
+            const total = data.reduce((a, b) => a + b, 0);
+            if (total === 0) {
+                return "Belum ada data diagnosa untuk dianalisis.";
+            }
+            const high = data[highIdx] || 0;
+            const low = data[lowIdx] || 0;
+            const highPct = Math.round((high / total) * 100);
+            const lowPct = Math.round((low / total) * 100);
+
+            if (highPct >= 60) {
+                return `<b>Insight:</b> <span class="text-success">Sebagian besar (${highPct}%) hasil diagnosa berada pada rentang nilai kepercayaan tinggi (81–100%).</span> Ini menunjukkan sistem memberikan diagnosa yang sangat meyakinkan.`;
+            } else if (highPct >= 30) {
+                return `<b>Insight:</b> <span class="text-warning">Sebagian hasil diagnosa (${highPct}%) berada pada rentang nilai kepercayaan tinggi (81–100%).</span> Namun, masih ada ruang untuk meningkatkan akurasi sistem.`;
+            } else if (lowPct >= 30) {
+                return `<b>Insight:</b> <span class="text-danger">Distribusi hasil diagnosa didominasi pada rentang nilai kepercayaan rendah (0–20%) sebesar ${lowPct}%.</span> Perlu evaluasi terhadap basis pengetahuan atau data gejala yang digunakan.`;
+            } else {
+                return `<b>Insight:</b> Distribusi nilai kepercayaan cukup merata. Perlu pemantauan lebih lanjut untuk memastikan akurasi sistem tetap optimal.`;
+            }
+        }
+
+        // Hook ke Chart.js renderCharts
+        async function renderCharts() {
+            const ctx = document.getElementById('akurasiChart').getContext('2d');
+            const chartData = await fetchKorelasiData();
+
+            if (window.lineChartInstance) window.lineChartInstance.destroy();
+
+            window.lineChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Jumlah Diagnosa',
+                        data: chartData.data,
+                        backgroundColor: 'rgba(167, 99, 255, 0.6)',
+                        borderColor: 'rgba(167, 99, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Nilai Kepercayaan (%)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Jumlah Diagnosa' },
+                            ticks: { font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+
+            // Update insight dinamis
+            const insight = generateAkurasiInsight(chartData.labels, chartData.data);
+            document.getElementById('akurasiInsight').innerHTML = insight;
+        }
+    </script>
+
+    <!-- insight tren diagnosa -->
+    <script>
+        // Fungsi untuk menghasilkan insight dinamis berdasarkan data tren diagnosa per hari
+        function generateKeparahanInsight(labels, data) {
+            if (!labels || !data || data.length === 0) {
+                return "Belum ada data tren diagnosa yang tersedia.";
+            }
+            const total = data.reduce((a, b) => a + b, 0);
+            const maxVal = Math.max(...data);
+            const minVal = Math.min(...data);
+            const maxIdx = data.indexOf(maxVal);
+            const minIdx = data.indexOf(minVal);
+            let trend = "";
+            if (data.length > 2) {
+                const first = data[0];
+                const last = data[data.length - 1];
+                if (last > first) {
+                    trend = "meningkat";
+                } else if (last < first) {
+                    trend = "menurun";
+                } else {
+                    trend = "stabil";
+                }
+            }
+            let insight = `Total diagnosa: <b>${total}</b> kasus. `;
+            insight += `Hari dengan diagnosa terbanyak: <b>${labels[maxIdx]}</b> (${maxVal} kasus). `;
+            if (minVal !== maxVal) {
+                insight += `Hari dengan diagnosa paling sedikit: <b>${labels[minIdx]}</b> (${minVal} kasus). `;
+            }
+            if (trend) {
+                insight += `Secara umum, tren diagnosa <b>${trend}</b> dari waktu ke waktu.`;
+            }
+            return insight;
+        }
+
+        async function updateKeparahanInsight() {
+            const response = await fetch("{% url 'data_tren_diagnosa_per_hari' %}");
+            const chartData = await response.json();
+            const insight = generateKeparahanInsight(chartData.labels, chartData.data);
+            document.getElementById('keparahanInsight').innerHTML = "<b>Insight:</b> " + insight;
+        }
+
+        window.addEventListener('DOMContentLoaded', updateKeparahanInsight);
+    </script>
+
+    <!-- insight distribusi penyakit -->
+    <script>
+        // Fungsi untuk membuat insight dinamis berdasarkan data chart penyakit
+        function generatePenyakitInsight(labels, data) {
+            if (!labels || !data || data.length === 0) {
+                return "Data distribusi penyakit belum tersedia.";
+            }
+            // Cari penyakit dengan jumlah terbanyak dan persentasenya
+            let total = data.reduce((a, b) => a + b, 0);
+            if (total === 0) {
+                return "Belum ada penyakit terdeteksi pada data saat ini.";
+            }
+            let maxIdx = data.indexOf(Math.max(...data));
+            let maxLabel = labels[maxIdx];
+            let maxValue = data[maxIdx];
+            let percent = ((maxValue / total) * 100).toFixed(1);
+
+            // Jika hanya satu penyakit
+            if (labels.length === 1) {
+                return `Hanya terdapat 1 jenis penyakit terdeteksi, yaitu <b>${maxLabel}</b> (${maxValue} kasus).`;
+            }
+
+            // Penyakit kedua terbanyak (jika ada)
+            let sorted = data
+                .map((val, idx) => ({ label: labels[idx], value: val }))
+                .sort((a, b) => b.value - a.value);
+            let second = sorted[1];
+
+            let insight = `Jenis penyakit yang paling sering terdeteksi adalah <b>${maxLabel}</b> (${maxValue} kasus, ${percent}% dari total).`;
+            if (second && second.value > 0) {
+                let percent2 = ((second.value / total) * 100).toFixed(1);
+                insight += ` Diikuti oleh <b>${second.label}</b> (${second.value} kasus, ${percent2}%).`;
+            }
+            insight += ` Total kasus terdeteksi: <b>${total}</b>.`;
+            return insight;
+        }
+
+        // Hook ke chart.js render distribusi penyakit
+        function updatePenyakitInsight(labels, data) {
+            const insightEl = document.getElementById('penyakitInsightText');
+            if (insightEl) {
+                insightEl.innerHTML = generatePenyakitInsight(labels, data);
+            }
+        }
+
+        // Patch: inject keparahanChart fetch untuk distribusi penyakit
+        // Asumsikan ada fetchDataDistribusiPenyakit() yang dipakai untuk chart
+        async function fetchDataDistribusiPenyakit() {
+            // Ganti URL sesuai endpoint distribusi penyakit
+            const response = await fetch("{% url 'data_distribusi_penyakit' %}");
+            return await response.json();
+        }
+
+        async function renderPenyakitChart() {
+            const ctx = document.getElementById('penyakitChart').getContext('2d');
+            const chartData = await fetchDataDistribusiPenyakit();
+
+            // Render chart
+            if (window.penyakitChartInstance) window.penyakitChartInstance.destroy();
+            window.penyakitChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Jumlah Kasus',
+                        data: chartData.data,
+                        backgroundColor: 'rgba(167, 99, 255, 0.6)',
+                        borderColor: 'rgba(167, 99, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw} kasus`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Jenis Penyakit'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Kasus'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update insight dinamis
+            updatePenyakitInsight(chartData.labels, chartData.data);
+        }
+
+        window.addEventListener('DOMContentLoaded', renderPenyakitChart);
+    </script>
+
 </body>
 
 </html>

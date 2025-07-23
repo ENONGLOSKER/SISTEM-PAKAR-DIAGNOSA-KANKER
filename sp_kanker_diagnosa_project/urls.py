@@ -55,5 +55,11 @@ urlpatterns = [
     
     # Proses diagnosa dari modal
     path('proses-diagnosa/', views.proses_diagnosa, name='proses_diagnosa'),
+    path('grafik/korelasi/', views.data_korelasi_gejala_penyakit, name='data_korelasi_gejala_penyakit'),
+    path('grafik/distribusi/', views.data_distribusi_penyakit, name='data_distribusi_penyakit'),
+    path('grafik/keparahan/', views.data_keparahan_gejala, name='data_keparahan_gejala'),
+    path('grafik/gender/', views.data_gender_pasien, name='data_gender_pasien'),
+    path('grafik/akurasi/', views.data_akurasi_diagnosa, name='data_akurasi_diagnosa'),
+    path('grafik/tren/', views.data_tren_diagnosa_per_hari, name='data_tren_diagnosa_per_hari'),
 
 ]
