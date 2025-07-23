@@ -21,6 +21,31 @@ from django.http import JsonResponse
 from django.db.models.functions import TruncMonth
 from django.db.models import F
 from django.db.models.functions import TruncDate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, "Login berhasil!")
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Username atau password salah.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'auth/login.html', {'form': form, 'title': 'Login'})
+
+@login_required
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Anda telah logout.")
+    return redirect('login_view')
 
 # Dashboard
 def index(request):

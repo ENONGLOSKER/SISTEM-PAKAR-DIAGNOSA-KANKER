@@ -4,7 +4,8 @@ from sp_kanker_diagnosa_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', views.login_view, name='login_view'),
+    path('logout/', views.logout_view, name='logout_view'),
     path('dashboard/', views.dashboard, name='dashboard'),
 
     # Pasien

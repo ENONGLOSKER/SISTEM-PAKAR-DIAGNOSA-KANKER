@@ -94,6 +94,9 @@
                 <a href="{% url 'hasil_list' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'hasil_list' %} active{% endif %}" title="Hasil">
                     <img src="{% static 'img/icon-hasil.svg' %}" alt="Hasil" style="width: 32px; height: 32px;">
                 </a>
+                <a href="{% url 'logout_view' %}" class="sidebar-icon{% if request.resolver_match.url_name == 'hasil_list' %} active{% endif %}" title="Hasil">
+                    <img src="{% static 'img/icon-logout.svg' %}" alt="Hasil" style="width: 32px; height: 32px;">
+                </a>
                 <!-- Jika ada menu tambahan lain, tambahkan di sini sesuai url yang ada -->
             </nav>
 
